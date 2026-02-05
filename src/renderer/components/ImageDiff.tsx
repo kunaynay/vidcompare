@@ -13,8 +13,8 @@ interface ImageDiffProps {
 }
 
 interface ViewportState {
-  x: number; // 0-1 relative position
-  y: number; // 0-1 relative position
+  x: number;
+  y: number;
   zoom: number;
 }
 
@@ -29,7 +29,6 @@ export default function ImageDiff({ images }: ImageDiffProps) {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const { selectedForDeletion, toggleFileForDeletion } = useStore();
 
-  // Handle mouse move for synced panning
   const handleMouseMove = useCallback((e: React.MouseEvent, index: number) => {
     if (isDragging) return;
 
@@ -47,7 +46,6 @@ export default function ImageDiff({ images }: ImageDiffProps) {
     }));
   }, [isDragging]);
 
-  // Handle wheel for zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
@@ -57,7 +55,6 @@ export default function ImageDiff({ images }: ImageDiffProps) {
     }));
   }, []);
 
-  // Handle drag start
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (viewport.zoom > 1) {
       setIsDragging(true);
@@ -65,12 +62,10 @@ export default function ImageDiff({ images }: ImageDiffProps) {
     }
   }, [viewport.zoom]);
 
-  // Handle drag end
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
 
-  // Handle drag
   const handleDrag = useCallback((e: React.MouseEvent) => {
     if (!isDragging) return;
 
@@ -86,12 +81,10 @@ export default function ImageDiff({ images }: ImageDiffProps) {
     setDragStart({ x: e.clientX, y: e.clientY });
   }, [isDragging, dragStart]);
 
-  // Reset zoom
   const resetZoom = useCallback(() => {
     setViewport({ x: 0.5, y: 0.5, zoom: 1 });
   }, []);
 
-  // Format file size
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -100,7 +93,6 @@ export default function ImageDiff({ images }: ImageDiffProps) {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
   };
 
-  // Calculate transform based on viewport state
   const getTransformStyle = () => {
     const translateX = (0.5 - viewport.x) * (viewport.zoom - 1) * 100;
     const translateY = (0.5 - viewport.y) * (viewport.zoom - 1) * 100;
@@ -110,7 +102,6 @@ export default function ImageDiff({ images }: ImageDiffProps) {
     };
   };
 
-  // Get grid class based on image count
   const getGridClass = () => {
     switch (images.length) {
       case 2:
@@ -128,7 +119,7 @@ export default function ImageDiff({ images }: ImageDiffProps) {
     <div className="h-full flex flex-col">
       {/* Image Grid */}
       <div
-        className={`flex-1 grid ${getGridClass()} gap-6 overflow-hidden p-1`}
+        className={`flex-1 grid ${getGridClass()} gap-4 overflow-hidden p-1`}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
@@ -138,8 +129,8 @@ export default function ImageDiff({ images }: ImageDiffProps) {
             <div
               key={image.id}
               ref={el => { containerRefs.current[index] = el; }}
-              className={`relative bg-surface-900 rounded-xl overflow-hidden cursor-crosshair transition-all duration-300 group
-                         ${isSelected ? 'selected-glow' : 'ring-1 ring-surface-700/50 hover:ring-accent-500/30'}`}
+              className={`relative bg-surface-950 rounded-md overflow-hidden cursor-crosshair transition-all duration-300 group
+                         ${isSelected ? 'selected-glow' : 'border border-surface-600 hover:border-accent-600'}`}
               onMouseMove={(e) => {
                 handleMouseMove(e, index);
                 if (isDragging) handleDrag(e);
@@ -160,15 +151,15 @@ export default function ImageDiff({ images }: ImageDiffProps) {
 
               {/* Selection Checkmark */}
               {isSelected && (
-                <div className="absolute top-3 right-3 w-8 h-8 bg-accent-500 rounded-lg
+                <div className="absolute top-3 right-3 w-8 h-8 bg-accent-400 rounded-sm
                                 flex items-center justify-center shadow-glow z-10 animate-fade-in">
-                  <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <svg className="w-5 h-5 text-surface-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                     <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               )}
 
-              {/* Crosshair indicator */}
+              {/* Crosshair */}
               <div
                 className="absolute w-8 h-8 pointer-events-none transition-all duration-75"
                 style={{
@@ -176,40 +167,37 @@ export default function ImageDiff({ images }: ImageDiffProps) {
                   top: `calc(${viewport.y * 100}% - 16px)`
                 }}
               >
-                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-accent-500/60" />
-                <div className="absolute top-1/2 left-0 right-0 h-px bg-accent-500/60" />
-                <div className="absolute left-1/2 top-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-500/40" />
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-accent-400/60" />
+                <div className="absolute top-1/2 left-0 right-0 h-px bg-accent-400/60" />
+                <div className="absolute left-1/2 top-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-400/40" />
               </div>
 
               {/* Image Info Overlay */}
               <div className="absolute bottom-0 left-0 right-0 media-overlay p-4">
-                <div className="text-white text-sm font-medium truncate mb-1">
+                <div className="text-surface-100 text-sm font-display font-medium truncate mb-1">
                   {image.fileName}
                 </div>
-                <div className="flex gap-3 text-xs text-surface-300 font-mono">
+                <div className="flex gap-3 text-xs text-surface-300 font-display">
                   <span>{formatBytes(image.size)}</span>
                   <span className="uppercase">{image.extension.replace('.', '')}</span>
                 </div>
               </div>
 
               {/* Index Badge */}
-              <div className="absolute top-3 left-3 w-7 h-7 bg-accent-600 rounded-lg
-                              flex items-center justify-center text-white text-xs font-bold shadow-glow">
+              <div className="absolute top-3 left-3 w-7 h-7 bg-accent-600 rounded-sm
+                              flex items-center justify-center text-surface-950 text-xs font-display font-bold shadow-glow">
                 {index + 1}
               </div>
-
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-accent-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </div>
           );
         })}
       </div>
 
       {/* Controls */}
-      <div className="mt-4 glass-panel rounded-xl p-5">
+      <div className="mt-4 bg-surface-900 border border-surface-600 rounded-lg p-5">
         <div className="flex items-center justify-center gap-4">
           {/* Zoom Controls */}
-          <div className="flex items-center gap-3 bg-surface-800/50 rounded-lg p-1">
+          <div className="flex items-center gap-3 bg-surface-850 rounded-sm p-1 border border-surface-600">
             <button
               onClick={() => setViewport(prev => ({ ...prev, zoom: Math.max(1, prev.zoom - 0.5) }))}
               className="btn-icon w-9 h-9"
@@ -222,7 +210,7 @@ export default function ImageDiff({ images }: ImageDiffProps) {
             </button>
 
             <div className="w-20 text-center">
-              <span className="font-mono text-white text-sm">
+              <span className="font-display text-surface-100 text-sm">
                 {Math.round(viewport.zoom * 100)}%
               </span>
             </div>
@@ -254,7 +242,7 @@ export default function ImageDiff({ images }: ImageDiffProps) {
         </div>
 
         {/* Help Text */}
-        <div className="mt-4 text-center text-xs text-surface-500">
+        <div className="mt-4 text-center text-xs text-surface-400 font-display">
           <span className="inline-flex items-center gap-2">
             <svg className="w-3.5 h-3.5 text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />

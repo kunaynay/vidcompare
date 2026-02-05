@@ -18,7 +18,6 @@ export default function App() {
   } = useStore();
 
   useEffect(() => {
-    // Set up IPC listeners
     const unsubProgress = window.electronAPI.onScanProgress((progress) => {
       setScanProgress(progress);
     });
@@ -43,30 +42,20 @@ export default function App() {
   }, [setScanProgress, setScanResult, setIsScanning, setError]);
 
   return (
-    <div className="h-screen flex flex-col bg-surface-950 relative">
-      {/* Ambient background glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-1/2 -left-1/4 w-full h-full bg-gradient-radial from-accent-500/5 via-transparent to-transparent" />
-        <div className="absolute -bottom-1/2 -right-1/4 w-full h-full bg-gradient-radial from-accent-600/3 via-transparent to-transparent" />
+    <div className="h-screen flex flex-col bg-surface-950">
+      <Header />
+      <div className="flex-1 flex overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 overflow-hidden">
+          {isScanning ? (
+            <ScanProgress />
+          ) : view === 'dashboard' ? (
+            <Dashboard />
+          ) : (
+            <ComparisonView />
+          )}
+        </main>
       </div>
-
-      {/* Main layout */}
-      <div className="relative z-10 h-full flex flex-col">
-        <Header />
-        <div className="flex-1 flex overflow-hidden">
-          <Sidebar />
-          <main className="flex-1 overflow-hidden">
-            {isScanning ? (
-              <ScanProgress />
-            ) : view === 'dashboard' ? (
-              <Dashboard />
-            ) : (
-              <ComparisonView />
-            )}
-          </main>
-        </div>
-      </div>
-
       <ErrorModal />
     </div>
   );

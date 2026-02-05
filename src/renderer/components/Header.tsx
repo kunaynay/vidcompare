@@ -11,41 +11,26 @@ export default function Header() {
   };
 
   return (
-    <header className="h-14 glass-panel border-t-0 border-x-0 flex items-center px-5 drag-region relative">
-      {/* Subtle top accent line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-500/30 to-transparent" />
-
+    <header className="h-14 bg-surface-900 border-b border-surface-600 flex items-center px-6 drag-region">
       <div className="flex items-center gap-5 no-drag">
-        {/* Logo */}
+        {/* Logo — matches Frame Maker style */}
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center shadow-glow">
-              <svg
-                className="w-5 h-5 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <path d="M15 10l-4 4l6 6l4-16l-18 7l6 2l2 6l4-5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-          <div>
-            <span className="font-display text-lg font-bold text-white tracking-tight">
-              VidCompare
-            </span>
-          </div>
+          <span className="text-accent-400 text-xl animate-pulse" style={{ animationDuration: '2s' }}>
+            &#9724;
+          </span>
+          <span className="font-display text-base font-semibold text-surface-100 tracking-widest uppercase">
+            VidCompare
+          </span>
         </div>
 
         {/* Mode Toggle */}
-        <div className="flex bg-surface-800/80 rounded-lg p-1 border border-surface-700/50">
+        <div className="flex bg-surface-850 rounded-sm p-0.5 border border-surface-600">
           <button
             onClick={() => handleModeChange('image')}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+            className={`px-4 py-1.5 rounded-sm text-sm font-display font-medium uppercase tracking-wider transition-all duration-200 flex items-center gap-2 ${
               mode === 'image'
-                ? 'bg-accent-600 text-white shadow-glow'
-                : 'text-surface-400 hover:text-white hover:bg-surface-700/50'
+                ? 'bg-accent-400 text-surface-950 shadow-glow'
+                : 'text-surface-400 hover:text-surface-100 hover:bg-surface-700'
             }`}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -57,10 +42,10 @@ export default function Header() {
           </button>
           <button
             onClick={() => handleModeChange('video')}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+            className={`px-4 py-1.5 rounded-sm text-sm font-display font-medium uppercase tracking-wider transition-all duration-200 flex items-center gap-2 ${
               mode === 'video'
-                ? 'bg-accent-600 text-white shadow-glow'
-                : 'text-surface-400 hover:text-white hover:bg-surface-700/50'
+                ? 'bg-accent-400 text-surface-950 shadow-glow'
+                : 'text-surface-400 hover:text-surface-100 hover:bg-surface-700'
             }`}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -72,7 +57,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Breadcrumb / Navigation */}
+      {/* Breadcrumb */}
       {view === 'comparison' && selectedSet && (
         <div className="flex items-center gap-3 ml-8 no-drag animate-fade-in">
           <button
@@ -82,24 +67,23 @@ export default function Header() {
             <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M15 18l-6-6 6-6" />
             </svg>
-            <span className="text-sm">Dashboard</span>
+            <span className="text-sm font-display uppercase tracking-wider">Dashboard</span>
           </button>
-          <svg className="w-4 h-4 text-surface-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="w-4 h-4 text-surface-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 18l6-6-6-6" />
           </svg>
-          <span className="text-sm text-white font-medium truncate max-w-xs">
+          <span className="text-sm text-surface-100 font-display font-medium truncate max-w-xs">
             {selectedSet.normalizedName}
           </span>
         </div>
       )}
 
-      {/* Spacer for dragging */}
       <div className="flex-1" />
 
-      {/* Subtle status indicator */}
-      <div className="no-drag flex items-center gap-2 text-xs text-surface-500">
-        <div className="w-1.5 h-1.5 rounded-full bg-success-500 animate-pulse" />
-        <span className="font-mono">Ready</span>
+      {/* Status indicator */}
+      <div className="no-drag flex items-center gap-2 text-xs text-surface-400">
+        <div className="w-1.5 h-1.5 rounded-full bg-success-400 animate-pulse" />
+        <span className="font-display uppercase tracking-wider">Ready</span>
       </div>
     </header>
   );

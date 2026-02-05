@@ -6,6 +6,7 @@ export default function Sidebar() {
     selectedFolder,
     setSelectedFolder,
     scanResult,
+    setScanResult,
     isScanning,
     setIsScanning,
     setScanProgress,
@@ -40,7 +41,6 @@ export default function Sidebar() {
   const handleDeleteSelected = async () => {
     if (selectedForDeletion.size === 0) return;
 
-    // Get all files that are selected
     const filesToDelete: string[] = [];
     const fileIds: string[] = [];
 
@@ -55,7 +55,6 @@ export default function Sidebar() {
       }
     }
 
-    // Check if deleting all files in any set
     const setsBeingEmptied: string[] = [];
     if (scanResult) {
       for (const set of scanResult.duplicateSets) {
@@ -76,13 +75,11 @@ export default function Sidebar() {
     const result = await window.electronAPI.deleteFiles(filesToDelete);
 
     if (result.success) {
-      // Check if current selected set will have less than 2 files after deletion
       if (selectedSet) {
         const remainingInCurrentSet = selectedSet.files.filter(
           f => !selectedForDeletion.has(f.id)
         );
         if (remainingInCurrentSet.length < 2) {
-          // Navigate back to dashboard since this set is no longer a duplicate
           setSelectedSet(null);
           setView('dashboard');
         }
@@ -102,51 +99,74 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-72 glass-panel border-t-0 border-b-0 border-l-0 flex flex-col">
+    <aside className="w-72 bg-surface-900 border-r border-surface-600 flex flex-col">
       {/* Folder Selection */}
       <div className="p-5">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-1 h-4 bg-accent-500 rounded-full" />
-          <h3 className="text-xs font-semibold text-surface-400 uppercase tracking-wider">Scan Location</h3>
+          <div className="w-1 h-4 bg-accent-400 rounded-full" />
+          <h3 className="text-xs font-display font-semibold text-surface-300 uppercase tracking-widest">Scan Location</h3>
         </div>
 
-        <button
-          onClick={handleSelectFolder}
-          disabled={isScanning}
-          className="w-full p-4 glass-card rounded-xl text-left transition-all duration-200
-                     hover:border-accent-500/30 hover:bg-surface-700/30
-                     disabled:opacity-50 disabled:cursor-not-allowed group"
-        >
-          {selectedFolder ? (
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs text-surface-400">
+        {selectedFolder ? (
+          <div className="w-full p-4 bg-surface-850 border border-accent-600/40 border-l-2 border-l-accent-400 rounded-md
+                          transition-all duration-200">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-2 text-xs text-accent-400 font-display uppercase tracking-wider">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                 </svg>
                 Selected folder
               </div>
-              <div className="text-white font-medium truncate text-sm">
-                {selectedFolder.split(/[/\\]/).pop()}
-              </div>
-              <div className="text-xs text-surface-500 truncate font-mono">
-                {selectedFolder}
-              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedFolder(null);
+                  setScanResult(null);
+                  setScanProgress(null);
+                  clearSelection();
+                  setSelectedSet(null);
+                  setView('dashboard');
+                }}
+                disabled={isScanning}
+                className="w-6 h-6 flex items-center justify-center rounded-sm text-surface-400
+                           hover:text-danger-400 hover:bg-danger-400/10 transition-all duration-150
+                           disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Clear folder selection"
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-          ) : (
+            <div className="text-surface-100 font-medium truncate text-sm">
+              {selectedFolder.split(/[/\\]/).pop()}
+            </div>
+            <div className="text-xs text-surface-400 truncate font-display mt-0.5">
+              {selectedFolder}
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={handleSelectFolder}
+            disabled={isScanning}
+            className="w-full p-4 bg-surface-850 border border-surface-600 rounded-md text-left transition-all duration-200
+                       hover:border-accent-600 hover:bg-surface-800
+                       disabled:opacity-50 disabled:cursor-not-allowed group"
+          >
             <div className="flex items-center gap-3 text-surface-400 group-hover:text-accent-400 transition-colors">
-              <div className="w-10 h-10 rounded-lg bg-surface-700/50 flex items-center justify-center group-hover:bg-accent-500/10 transition-colors">
+              <div className="w-10 h-10 rounded-md bg-surface-800 border border-surface-600 flex items-center justify-center group-hover:border-accent-600 transition-colors">
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                   <path d="M12 11v6M9 14h6" />
                 </svg>
               </div>
               <div>
-                <div className="text-sm font-medium">Select Folder</div>
-                <div className="text-xs text-surface-500">Click to browse</div>
+                <div className="text-sm font-medium font-display text-surface-100">Select Folder</div>
+                <div className="text-xs text-surface-400 font-body">Click to browse</div>
               </div>
             </div>
-          )}
-        </button>
+          </button>
+        )}
 
         {/* Scan Button */}
         <div className="mt-4">
@@ -156,7 +176,8 @@ export default function Sidebar() {
               className="w-full btn-danger flex items-center justify-center gap-2"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
               Cancel Scan
             </button>
@@ -183,28 +204,28 @@ export default function Sidebar() {
         <>
           <div className="p-5">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-4 bg-accent-500 rounded-full" />
-              <h3 className="text-xs font-semibold text-surface-400 uppercase tracking-wider">Results</h3>
+              <div className="w-1 h-4 bg-accent-400 rounded-full" />
+              <h3 className="text-xs font-display font-semibold text-surface-300 uppercase tracking-widest">Results</h3>
             </div>
 
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-surface-400">Files Scanned</span>
-                <span className="stat-value text-white">{scanResult.totalFilesScanned.toLocaleString()}</span>
+                <span className="text-sm text-surface-300 font-body">Files Scanned</span>
+                <span className="stat-value text-surface-100">{scanResult.totalFilesScanned.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-surface-400">Duplicate Sets</span>
-                <span className="stat-value text-white">{scanResult.duplicateSets.length}</span>
+                <span className="text-sm text-surface-300 font-body">Duplicate Sets</span>
+                <span className="stat-value text-surface-100">{scanResult.duplicateSets.length}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-surface-400">Duplicates Found</span>
-                <span className="stat-value text-warning-400">{scanResult.totalDuplicatesFound}</span>
+                <span className="text-sm text-surface-300 font-body">Duplicates Found</span>
+                <span className="stat-value text-accent-400">{scanResult.totalDuplicatesFound}</span>
               </div>
 
               {/* Savings highlight */}
-              <div className="mt-4 p-3 rounded-lg bg-success-500/10 border border-success-500/20">
+              <div className="mt-4 p-3 rounded-md bg-success-400/10 border border-success-400/20">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-success-400">Potential Savings</span>
+                  <span className="text-sm text-success-400 font-display uppercase tracking-wider">Potential Savings</span>
                   <span className="stat-value text-success-400 text-base">{formatBytes(scanResult.spaceSavings)}</span>
                 </div>
               </div>
@@ -220,20 +241,20 @@ export default function Sidebar() {
         <>
           <div className="p-5 animate-fade-in">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-4 bg-danger-500 rounded-full" />
-              <h3 className="text-xs font-semibold text-surface-400 uppercase tracking-wider">Selection</h3>
+              <div className="w-1 h-4 bg-danger-400 rounded-full" />
+              <h3 className="text-xs font-display font-semibold text-surface-300 uppercase tracking-widest">Selection</h3>
             </div>
 
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-danger-500/20 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-md bg-danger-400/20 border border-danger-400/40 flex items-center justify-center">
                   <svg className="w-4 h-4 text-danger-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                   </svg>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-white">{selectedForDeletion.size} files</div>
-                  <div className="text-xs text-surface-500">selected for deletion</div>
+                  <div className="text-sm font-medium text-surface-100 font-display">{selectedForDeletion.size} files</div>
+                  <div className="text-xs text-surface-400 font-body">selected for deletion</div>
                 </div>
               </div>
             </div>
@@ -258,13 +279,12 @@ export default function Sidebar() {
         </>
       )}
 
-      {/* Spacer */}
       <div className="flex-1" />
 
       {/* Help */}
-      <div className="p-5 border-t border-surface-700/30">
-        <div className="flex items-start gap-3 text-xs text-surface-500">
-          <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-surface-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <div className="p-5 border-t border-surface-600">
+        <div className="flex items-start gap-3 text-xs text-surface-400 font-body">
+          <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-surface-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10" />
             <path d="M12 16v-4M12 8h.01" />
           </svg>

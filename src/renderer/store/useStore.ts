@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AppMode, DuplicateSet, ScanProgress, ScanResult, FileInfo } from '../types';
+import type { AppMode, DuplicateSet, ScanProgress, ScanResult } from '../types';
 
 interface AppState {
   // Mode

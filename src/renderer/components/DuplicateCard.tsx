@@ -73,29 +73,29 @@ export default function DuplicateCard({ duplicateSet }: DuplicateCardProps) {
   return (
     <div
       onClick={handleClick}
-      className="glass-card rounded-xl overflow-hidden cursor-pointer card-hover group"
+      className="card cursor-pointer group"
     >
       {/* Thumbnail */}
-      <div className="aspect-video bg-surface-900 relative overflow-hidden">
+      <div className="aspect-video bg-surface-850 relative overflow-hidden">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-surface-600 border-t-accent-500 rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-surface-500 border-t-accent-400 rounded-full animate-spin" />
           </div>
         ) : thumbnail ? (
           <img
             src={thumbnail}
             alt={duplicateSet.normalizedName}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-surface-800/50">
+          <div className="w-full h-full flex items-center justify-center bg-surface-850">
             {mode === 'video' ? (
-              <svg className="w-12 h-12 text-surface-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg className="w-12 h-12 text-surface-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="M10 9l5 3-5 3V9z" fill="currentColor" />
               </svg>
             ) : (
-              <svg className="w-12 h-12 text-surface-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg className="w-12 h-12 text-surface-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <rect x="3" y="3" width="18" height="18" rx="2" />
                 <circle cx="8.5" cy="8.5" r="1.5" />
                 <path d="M21 15l-5-5L5 21" />
@@ -104,52 +104,30 @@ export default function DuplicateCard({ duplicateSet }: DuplicateCardProps) {
           </div>
         )}
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-surface-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
         {/* File count badge */}
-        <div className="absolute top-3 right-3 badge badge-warning">
-          <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-          </svg>
-          {duplicateSet.files.length}
+        <div className="absolute top-2 right-2 badge badge-accent">
+          {duplicateSet.files.length}&times;
         </div>
 
         {/* Match type badge */}
-        <div className={`absolute top-3 left-3 badge ${
+        <div className={`absolute top-2 left-2 badge ${
           duplicateSet.matchType === 'visual'
             ? 'badge-accent'
             : 'badge-neutral'
         }`}>
-          {duplicateSet.matchType === 'visual' ? (
-            <>
-              <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-              Visual
-            </>
-          ) : (
-            <>
-              <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-              </svg>
-              Name
-            </>
-          )}
+          {duplicateSet.matchType === 'visual' ? 'Visual' : 'Name'}
         </div>
 
         {/* Duration (for videos) */}
         {mode === 'video' && duplicateSet.files[0]?.duration && (
-          <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/70 backdrop-blur-sm text-white text-xs font-mono rounded">
+          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-surface-950/80 backdrop-blur-sm text-surface-100 text-xs font-display rounded-sm">
             {formatDuration(duplicateSet.files[0].duration)}
           </div>
         )}
 
         {/* Selected indicator */}
         {selectedCount > 0 && (
-          <div className="absolute bottom-3 left-3 badge badge-danger">
+          <div className="absolute bottom-2 left-2 badge badge-danger">
             <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
             </svg>
@@ -160,12 +138,12 @@ export default function DuplicateCard({ duplicateSet }: DuplicateCardProps) {
 
       {/* Info */}
       <div className="p-4">
-        <h3 className="font-medium text-white truncate mb-2 group-hover:text-accent-300 transition-colors" title={duplicateSet.normalizedName}>
+        <h3 className="font-display font-medium text-surface-100 truncate mb-2 group-hover:text-accent-400 transition-colors text-sm" title={duplicateSet.normalizedName}>
           {duplicateSet.normalizedName || 'Unnamed'}
         </h3>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-surface-400 font-mono">{formatBytes(totalSize)}</span>
-          <span className="text-surface-500 text-xs">total size</span>
+          <span className="text-surface-300 font-display">{formatBytes(totalSize)}</span>
+          <span className="text-surface-400 text-xs font-display uppercase tracking-wider">total size</span>
         </div>
       </div>
     </div>
